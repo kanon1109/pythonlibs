@@ -3,13 +3,15 @@
 #计算文件内的行数
 import datetime
 import os
-class CountFileLines(object):
-
+class CountFileLines():
+    #行数信息字典
+    lineList = []
     def __init__(self):
         return
 
     #查找目录下所有某个类型的文件
     def dirFilesLines(self, path, type):
+        lineList = []
         filesList = os.listdir(path)
         count = 0
         if len(filesList) == 0:
@@ -22,13 +24,14 @@ class CountFileLines(object):
             #判断是否为目录
             if os.path.isdir(path+"\\"+s) == True:
                 count += self.dirFilesLines(path+"\\"+s, type)
-                print path+"\\"+s, len(os.listdir(path+"\\"+s))
                 continue
             elif s.endswith(type):
                 #判断是否是某个后缀名
                 #计算行数
-                #print "s" + s
-                count += self.fileLines(path + "\\" +s)
+                lines = self.fileLines(path + "\\" +s)
+                count += lines
+                self.lineList.append({"file": s, "lines":lines})
+                print "file" , s , "lines", lines
         return count
 
     #打开某个文件并计算某个文件的行数
@@ -38,10 +41,24 @@ class CountFileLines(object):
         f.close()
         return len(c)
 
+    #根据文件的行数排序
+    def sort(self):
+        length = len(self.lineList)
+        if length == 0:
+            print "请先执行 dirFilesLines"
+            return
+        #根据第一个关键字排序
+        self.lineList.sort(key=lambda obj:obj.get('lines'), reverse=True)
+        print "len", length
+
+        for o in self.lineList:
+            print o
+
 
 if __name__ == "__main__":
     starttime = datetime.datetime.now()
     cf = CountFileLines()
-    print cf.dirFilesLines(r"E:\workspace\yitongtianxia\src","as")
+    print cf.dirFilesLines(r"E:\workspace\benbentiaotiao\src","as")
     endtime = datetime.datetime.now()
     print (endtime - starttime).seconds
+    cf.sort()
